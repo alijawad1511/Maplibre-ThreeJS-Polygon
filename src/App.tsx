@@ -163,18 +163,11 @@ function App() {
 
       // Add Texture at Center
       polygonsCollection.features.map((feature: any) => {
-        console.log("Feature:", feature.properties.image);
-        console.log("Polygon Coords:", feature.geometry.coordinates);
-
         // Calculate the centroid of the polygon
         const polygon = turf.polygon(feature.geometry.coordinates);
         const centroid = turf.center(polygon);
 
-        console.log("Coordinates:", centroid.geometry.coordinates);
-
         const modelPosition = projectToWorld(centroid.geometry.coordinates);
-
-        console.log("Model Position:", modelPosition);
 
         if (feature.properties.image === "") {
           // Add Text instead of Image
@@ -195,6 +188,10 @@ function App() {
           myText.color = 0xff0000;
           myText.rotation.x = Math.PI;
           myText.rotation.y = Math.PI;
+
+          // Setting Anchor at Center of Text
+          myText.anchorX = "50%";
+          myText.anchorY = "50%";
           console.log("Text:", myText);
 
           // Update the rendering:
@@ -220,6 +217,15 @@ function App() {
         }
 
         wrapper.current?.repaint();
+      });
+
+      // Getting Bearing of Map when moving camera...
+      map.current?.on("move", () => {
+        console.log("Bearing:", map.current?.getBearing());
+        console.log("Map Data:", wrapper.current?.scene.children[0]);
+        wrapper.current?.scene.children[1].rotateZ(
+          map.current?.getBearing() as any
+        );
       });
     });
 
