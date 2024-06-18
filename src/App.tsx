@@ -223,9 +223,14 @@ function App() {
       map.current?.on("move", () => {
         console.log("Bearing:", map.current?.getBearing());
         console.log("Map Data:", wrapper.current?.scene.children[0]);
-        wrapper.current?.scene.children[1].rotateZ(
-          map.current?.getBearing() as any
-        );
+        const bearing = map.current?.getBearing() as number;
+        const obj = wrapper.current?.scene.children[1] as THREE.Object3D;
+        if (bearing < 90 && bearing > -90) {
+          obj.rotation.z = 0;
+        }
+        else {
+          obj.rotation.z = Math.PI;
+        }
       });
     });
 
