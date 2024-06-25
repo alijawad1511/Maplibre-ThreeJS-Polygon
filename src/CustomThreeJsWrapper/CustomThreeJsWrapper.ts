@@ -31,7 +31,6 @@ class CustomThreeJSWrapper {
     this.renderer = new WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: false,
       canvas: map.getCanvas(),
       context: gl,
     });
@@ -41,6 +40,9 @@ class CustomThreeJSWrapper {
       this.map.getCanvas().clientHeight
     );
     this.renderer.autoClear = false;
+    this.renderer.autoClearColor = false;
+    this.renderer.autoClearDepth = false;
+    this.renderer.autoClearStencil = false;
 
     this.fov = FOV_DEGREES;
 

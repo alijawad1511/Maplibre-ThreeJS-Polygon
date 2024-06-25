@@ -1,6 +1,6 @@
 // constants.js
 export const WORLD_SIZE = 1024000; // TILE_SIZE * 2000
-export const MERCATOR_A = 6378137.0; // 900913 projection property. (Deprecated) Replaced by EARTH_RADIUS
+export const MERCATOR_A = 6371008.8; // 900913 projection property. (Deprecated) Replaced by EARTH_RADIUS
 export const FOV_ORTHO = 0.1 / 180 * Math.PI; // Mapbox doesn't accept 0 as FOV
 export const FOV = Math.atan(3 / 4); // from Mapbox https://github.com/mapbox/mapbox-gl-js/blob/main/src/geo/transform.js#L93
 export const EARTH_RADIUS = 6371008.8; // from Mapbox https://github.com/mapbox/mapbox-gl-js/blob/0063cbd10a97218fb6a0f64c99bf18609b918f4c/src/geo/lng_lat.js#L11
