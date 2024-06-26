@@ -14,34 +14,6 @@ interface Content3DLayer extends CustomLayerInterface {
   render(): void;
 }
 
-const singlePolygon = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [74.31652671001302, 31.565873719350336],
-            [74.31832543117767, 31.566178270078325],
-            [74.3184522640806, 31.56481269614069],
-            [74.31796799299701, 31.564753750052915],
-            [74.31793340220537, 31.564517965328363],
-            [74.31636528631844, 31.563938325348502],
-            [74.31613468104072, 31.56410534062765],
-            [74.31652671001302, 31.565873719350336],
-          ],
-        ],
-      },
-      id: "d98a5cd9-30df-41d7-a3c8-8e412361c7cf",
-      properties: {
-        city: "Lahore",
-        country: "Pakistan",
-      },
-    },
-  ],
-};
 
 const polygonsCollection: any = {
   type: "FeatureCollection",
@@ -139,8 +111,6 @@ function App() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | null>();
   const wrapper = useRef<CustomThreeJSWrapper | null>(null);
-  const lat = 31.56506;
-  const lng = 74.31729;
 
   const content3DLayer: Content3DLayer = {
     id: "custom-threejs-layer",
@@ -204,7 +174,7 @@ function App() {
   
         console.log("Wrapper:", wrapper.current);
   
-        let items = [];
+        let items: any[] = [];
         // Add Texture at Center
         polygonsCollection.features.map((feature: any) => {
           let coordinates = feature.geometry.coordinates;
