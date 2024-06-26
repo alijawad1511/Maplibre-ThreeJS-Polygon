@@ -259,11 +259,10 @@ function App() {
             // size2.setZ(1);
   
             // const ratio = size1.divide( size2 );
-  
             // console.log('ratio: ',size1, size2, ratio);
-  
             // myText.scale.set(myText.scale.x * (ratio.x), myText.scale.y * (ratio.y), myText.scale.z * (ratio.z));
-            myText.scale.set(0.00095, 0.00095, 1);
+
+            myText.scale.set(0.00095, 0.00095, 1); // Scale calculationn hard coded for now
             myText.position.set(
               textPosition.x,
               textPosition.y,
@@ -272,6 +271,8 @@ function App() {
             myText.rotateZ(Math.PI/9);
 
             items.push(myText);
+
+            map.current!.repaint = true;
             });
           } else {
             // Load Texture
