@@ -11,7 +11,6 @@ import {
 import * as THREE from "three";
 import { FOV_DEGREES } from "./utility/constants.js";
 import CameraSync from "./utility/CameraSync.js";
-import * as turf from "@turf/turf";
 import { projectToWorld } from "./utility/utils.js";
 import { Text } from "troika-three-text";
 
@@ -85,7 +84,7 @@ class CustomThreeJSWrapper {
   }
 
   async clear(layerId = null) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let objects: THREE.Object3D[] = [];
       this.scene.children.forEach(function (object: THREE.Object3D) {
         objects.push(object);

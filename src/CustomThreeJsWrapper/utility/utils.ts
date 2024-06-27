@@ -7,9 +7,8 @@ import {
   WORLD_SIZE,
 } from "./constants.js";
 import { LngLatLike } from "maplibre-gl";
-import { Position } from "@turf/turf";
 
-export function projectToWorld(coords: Position) {
+export function projectToWorld(coords: Array<number>) {
   var projected = [
     -MERCATOR_A * DEG2RAD * coords[0] * PROJECTION_WORLD_SIZE,
     -MERCATOR_A *
