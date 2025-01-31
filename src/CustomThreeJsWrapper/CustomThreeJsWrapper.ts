@@ -1,4 +1,4 @@
-import { Map } from "maplibre-gl";
+import { Map } from "mapbox-gl";
 import {
   AmbientLight,
   DataTexture,
@@ -15,6 +15,8 @@ import * as turf from "@turf/turf";
 import { projectToWorld } from "./utility/utils.js";
 import { Text } from "troika-three-text";
 
+type RenderListener = () => void;
+
 class CustomThreeJSWrapper {
   map!: Map;
   scene!: Scene;
@@ -22,6 +24,8 @@ class CustomThreeJSWrapper {
   renderer!: WebGLRenderer;
   cameraSync!: CameraSync;
   fov: number;
+
+  onRenderListeners: RenderListener[] = [];
 
   constructor(map: Map, gl: WebGLRenderingContext) {
     this.scene = new Scene();
@@ -41,17 +45,14 @@ class CustomThreeJSWrapper {
     );
     this.renderer.autoClear = false;
 
-    this.fov = FOV_DEGREES;
+    this.fov = 60;
 
     const h = this.map.getCanvas().clientHeight;
     const w = this.map.getCanvas().clientWidth;
 
     this.map.transform.fov = this.fov;
+    console.log("fov", this.fov)
     this.camera = new PerspectiveCamera(
-      this.map.transform.fov,
-      w / h,
-      0.1,
-      1000
     );
 
     this.cameraSync = new CameraSync(map, this.camera, this.scene);
@@ -104,6 +105,11 @@ class CustomThreeJSWrapper {
 
   add(object: Object3D) {
     this.scene.add(object);
+  }
+
+  initDefaultLights() {
+    const light = new AmbientLight(0x404040, 3); // soft white light
+    this.scene.add(light);
   }
 
   setEnvironment(texture: DataTexture) {
@@ -194,7 +200,15 @@ class CustomThreeJSWrapper {
     object = null;
   }
 
+  addOnRenderListener(onRenderListener: RenderListener) {
+    this.onRenderListeners.push(onRenderListener);
+  }
+
   update() {
+    this.onRenderListeners.forEach(listener => {
+      listener();
+    });
+    
     if (this.map.repaint) this.map.repaint = false;
     this.scene.updateMatrixWorld(true);
 
