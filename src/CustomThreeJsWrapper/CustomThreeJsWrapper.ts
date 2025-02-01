@@ -45,14 +45,17 @@ class CustomThreeJSWrapper {
     );
     this.renderer.autoClear = false;
 
-    this.fov = 60;
-
     const h = this.map.getCanvas().clientHeight;
     const w = this.map.getCanvas().clientWidth;
 
+    this.fov = FOV_DEGREES;
+
     this.map.transform.fov = this.fov;
-    console.log("fov", this.fov)
     this.camera = new PerspectiveCamera(
+      this.map.transform.fov,
+      w / h,
+      0.1,
+      1000
     );
 
     this.cameraSync = new CameraSync(map, this.camera, this.scene);

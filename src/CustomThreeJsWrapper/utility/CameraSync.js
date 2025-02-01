@@ -108,7 +108,7 @@ class CameraSync {
         if (this.camera instanceof OrthographicCamera) {
             this.camera.projectionMatrix = makeOrthographicMatrix(w / -2,w / 2,h / 2,h / -2,nearZ,farZ);
         } else {
-            this.camera.projectionMatrix = makePerspectiveMatrix(t._fov,w / h,nearZ,farZ);
+            this.camera.projectionMatrix = makePerspectiveMatrix(t._fov,w / h,0.1,farZ);
         }
         this.camera.projectionMatrix.elements[8] = -offset.x * 2 / t.width;
         this.camera.projectionMatrix.elements[9] = offset.y * 2 / t.height;

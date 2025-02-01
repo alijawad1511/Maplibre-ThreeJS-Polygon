@@ -60,11 +60,13 @@ function App() {
         const loader = new GLTFLoader();
         loader.load('car.glb', (data: GLTF) => {
           console.log('data', data.scene);
-          const pos = projectToWorld(map.current?.getCenter().toArray());
+          const center = map.current?.getCenter().toArray();
+          const altitude = 100;
+          const pos = projectToWorld([center[0], center[1], altitude]);
           console.log(pos);
           const model = data.scene;
           model.rotateX(Math.PI/2);
-          model.position.set(pos.x, pos.y, pos.z - 1.6);
+          model.position.set(pos.x, pos.y, pos.z - 2);
           wrapper.current?.add(model);
 
           
@@ -74,7 +76,7 @@ function App() {
             model.position.y -= 0.1;
             if (map.current) {
               const camera = map.current.getFreeCameraOptions();
-              camera.position = MercatorCoordinate.fromLngLat(unprojectFromWorld(model.position), 5);
+              camera.position = MercatorCoordinate.fromLngLat(unprojectFromWorld(model.position), altitude);
 
               // Lerp bearing between 60 and -60 degrees
               bearingProgress += 0.01 * bearingDirection;
@@ -88,7 +90,7 @@ function App() {
               const smoothProgress = bearingProgress * bearingProgress * (3 - 2 * bearingProgress);
               const bearing = 90 * (1 - smoothProgress) + (-90) * smoothProgress;
               
-              camera.setPitchBearing(80, bearing);
+              camera.setPitchBearing(80, 0);
 
               // camera.setPitchBearing(80, 0);
               map.current.setFreeCameraOptions(camera);
