@@ -72,7 +72,7 @@ class CameraSync {
         const worldSize = this.worldSize();
 
         // if (this.map.tb.mapboxVersion >= 2.0) {
-        // mapbox version >= 2.0
+        // // mapbox version >= 2.0
         // pixelsPerMeter = this.mercatorZfromAltitude(1, t.center.lat) * worldSize;
         // const fovAboveCenter = t._fov * (0.5 + t.centerOffset.y / t.height);
         // // Adjust distance to MSL by the minimum possible elevation visible on screen,
@@ -85,7 +85,8 @@ class CameraSync {
         // // Add a bit extra to avoid precision problems when a fragment's distance is exactly `furthestDistance`
         // const horizonDistance = cameraToSeaLevelDistance * (1 / t._horizonShift);
         // farZ = Math.min(furthestDistance * 1.01, horizonDistance);
-        // } else {
+        // } 
+        // else {
         //     // mapbox version < 2.0 or azure maps
         // Furthest distance optimized by @jscastro76
         const topHalfSurfaceDistance = Math.sin(this.halfFov) * this.cameraToCenterDistance / Math.sin(Math.PI - groundAngle - this.halfFov);
@@ -108,7 +109,7 @@ class CameraSync {
         if (this.camera instanceof OrthographicCamera) {
             this.camera.projectionMatrix = makeOrthographicMatrix(w / -2,w / 2,h / 2,h / -2,nearZ,farZ);
         } else {
-            this.camera.projectionMatrix = makePerspectiveMatrix(t._fov,w / h,0.1,farZ);
+            this.camera.projectionMatrix = makePerspectiveMatrix(t._fov,w / h,0.1,10000);
         }
         this.camera.projectionMatrix.elements[8] = -offset.x * 2 / t.width;
         this.camera.projectionMatrix.elements[9] = offset.y * 2 / t.height;
@@ -325,6 +326,10 @@ function makePerspectiveMatrix(fovy,aspect,near,far) {
 
     out.elements = newMatrix
     return out;
+}
+
+function clamp(n, min, max) {
+    return Math.min(max, Math.max(min, n));
 }
 
 export default CameraSync;
