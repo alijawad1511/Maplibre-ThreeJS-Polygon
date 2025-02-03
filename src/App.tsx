@@ -8,6 +8,8 @@ import * as THREE from "three";
 import { projectToWorld, unprojectFromWorld } from "./CustomThreeJsWrapper/utility/utils";
 import { Text } from "troika-three-text";
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Cylinder3D } from "./Cylinder3D";
+import { HelicopterPredictionBox } from './HelicopterPredictionBox';
 
 interface Content3DLayer {
   id: string;
@@ -58,42 +60,92 @@ function App() {
         console.log("Wrapper:", wrapper.current);
 
         const loader = new GLTFLoader();
-        loader.load('car.glb', (data: GLTF) => {
+        loader.load('plane.glb', (data: GLTF) => {
           console.log('data', data.scene);
           const center = map.current?.getCenter().toArray();
-          const altitude = 100;
+          const altitude = 400;
           const pos = projectToWorld([center[0], center[1], altitude]);
           console.log(pos);
           const model = data.scene;
           model.rotateX(Math.PI/2);
-          model.position.set(pos.x, pos.y, pos.z - 2);
+          model.position.set(pos.x, pos.y, pos.z);
+          model.scale.set(0.002, 0.002, 0.002);
           wrapper.current?.add(model);
+
+          // Add Probablistic Volume for Helicopter
+          const box = new THREE.Box3().setFromObject(model);
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const boxCenter = new THREE.Vector3();
+          box.getCenter(boxCenter);
+
+          // const boxGeometry = new THREE.BoxGeometry(size.x, size.y, size.z);
+          // const boxMaterial = new THREE.MeshBasicMaterial({
+          //   color: 0xff0000,
+          //   transparent: true, // Disable transparency for debugging
+          //   opacity: 0.4, // Full visibility
+          //   wireframe: false, // Enable wireframe mode to see edges clearly
+          // });
+
+          // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+          // boxMesh.position.set(model.position.x, model.position.y, model.position.z + 0.6);
+          // boxMesh.scale.set(0.015, 0.015, 0.015);
+          // wrapper.current?.add(boxMesh);
+
+          const helicopterBox = new HelicopterPredictionBox(size, 0xff0000, 0.5);
+          helicopterBox.setPosition(model.position.x, model.position.y, model.position.z + 0.6);
+          helicopterBox.setScale(0.015, 0.015, 0.015);
+          const boxMesh = helicopterBox.getMesh();
+          wrapper.current?.add(boxMesh);
+
+          // Add Probablistic Volume for Plane
+          // const cylinder = new Cylinder3D(2, 0.3, 8, 0x00ff00, 0.5);
+          // const helicopterPos = model.position; // Use helicopter model's position
+          // cylinder.setPosition(helicopterPos.x + 4, helicopterPos.y, helicopterPos.z + 0.1);
+          // const cylinderMesh = cylinder.getMesh();
+          // cylinderMesh.rotateZ(-Math.PI / 2);
+          // wrapper.current?.add(cylinderMesh);
 
           
           let bearingProgress = 0;
-          let bearingDirection = 1;
+          let bearingDirection = 2;
+
+          // Initial Camera Position
+          const camera = map.current?.getFreeCameraOptions();
+          if (camera) {
+            const cameraPosition = model.position.clone();
+            cameraPosition.y += 10;
+            camera.position = MercatorCoordinate.fromLngLat(unprojectFromWorld(cameraPosition), altitude + 50);
+            camera.setPitchBearing(80, 0);
+            map.current?.setFreeCameraOptions(camera);
+          }
+
           const animateCarMovement = () => {
-            model.position.y -= 0.1;
+            model.position.x += 0.1;
+            boxMesh.position.x += 0.1;
+            // cylinderMesh.position.x += 0.1;
             if (map.current) {
-              const camera = map.current.getFreeCameraOptions();
-              camera.position = MercatorCoordinate.fromLngLat(unprojectFromWorld(model.position), altitude);
+              // const camera = map.current.getFreeCameraOptions();
+              // const cameraPosition = model.position.clone();
+              // cameraPosition.y += 5;
+              // camera.position = MercatorCoordinate.fromLngLat(unprojectFromWorld(cameraPosition), altitude + 50); // 50 for Camera adjustment from ground level to center of helicopter
 
-              // Lerp bearing between 60 and -60 degrees
-              bearingProgress += 0.01 * bearingDirection;
+              // // Lerp bearing between 60 and -60 degrees
+              // bearingProgress += 0.01 * bearingDirection;
               
-              // Reverse direction when reaching extremes
-              if (bearingProgress >= 1 || bearingProgress <= -1) {
-                bearingDirection *= -1;
-              }
+              // // Reverse direction when reaching extremes
+              // if (bearingProgress >= 1 || bearingProgress <= -1) {
+              //   bearingDirection *= -1;
+              // }
               
-              // Interpolate bearing using smoothstep for more natural motion
-              const smoothProgress = bearingProgress * bearingProgress * (3 - 2 * bearingProgress);
-              const bearing = 90 * (1 - smoothProgress) + (-90) * smoothProgress;
+              // // Interpolate bearing using smoothstep for more natural motion
+              // const smoothProgress = bearingProgress * bearingProgress * (3 - 2 * bearingProgress);
+              // const bearing = 90 * (1 - smoothProgress) + (-90) * smoothProgress;
               
-              camera.setPitchBearing(80, 0);
-
               // camera.setPitchBearing(80, 0);
-              map.current.setFreeCameraOptions(camera);
+
+              // // camera.setPitchBearing(80, 0);
+              // map.current.setFreeCameraOptions(camera);
 
               map.current?.triggerRepaint();
             }
